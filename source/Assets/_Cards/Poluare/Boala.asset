@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 479da066af0dd9c41b70f9e11251de22, type: 3}
+  m_Name: Boala
+  m_EditorClassIdentifier: 
+  name: Virus
+  description: Playing this card has a chance of infecting the enemy with a disease
+    and make him lose a life. The chance is based on his stats.
+  front: {fileID: 21300000, guid: 7dc3dcc5a0f7c054d9222bc7a4be3dd0, type: 3}
+  artwork: {fileID: 21300000, guid: efb879ad826421b48aa3b849e281fd6f, type: 3}
+  back: {fileID: 21300000, guid: 2013d8988cfc86e4fae8dd37d9101454, type: 3}
+  manaImage: {fileID: 21300000, guid: 97b287709be0bc043a88d4916d6f6216, type: 3}
+  cost: 0
+  type: 1
+  valueFoame: 0
+  valueStres: 0
+  valueIgiena: 0
+  ID_Swap: 0

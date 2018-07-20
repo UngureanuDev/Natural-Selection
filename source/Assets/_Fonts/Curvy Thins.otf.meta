@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 1a622de8f987a834297e1e8fe73c32aa
+timeCreated: 1517693246
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Curvy Thins
+  fontNames:
+  - Curvy Thins
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

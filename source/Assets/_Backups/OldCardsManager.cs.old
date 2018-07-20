@@ -1,0 +1,145 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public class OldCardsManager : MonoBehaviour
+{
+    #region declarations
+    public float offsetY = -2.75f;
+    public GameObject CardTemplate;
+
+    public GameObject GameManager;
+    private Statistics statistics;
+    private List<PlayingCard> hand;
+
+    public int[] cardsCountByID_Natura;
+    public int[] cardsCountByID_Poluare;
+
+    PhotonView photonView;
+
+    #endregion
+
+    void Start()
+    {
+        //ArrangeCards();
+        statistics = GameManager.GetComponent<Statistics>();
+        photonView = PhotonView.Get(this);
+    }
+
+    void DrawCard()
+    {
+        // TODO
+        // aleg o carte random din cele ramase in pachet
+        // o spawnez
+        bool ok;
+        int id;
+        do
+        {
+            ok = true;
+            id = Random.Range(0, cardsCountByID_Natura.Length-1);
+            if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Natura" && cardsCountByID_Natura[id] <= 0) ok = false;
+            else if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Poluare" && cardsCountByID_Poluare[id] <= 0) ok = false;
+        } while (ok == false);
+
+        GameObject InstantiatedCard = Instantiate(CardTemplate, transform);
+        PlayingCard card = InstantiatedCard.GetComponent<PlayingCard>();
+        card.SetID(id);
+        if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Natura")
+        {
+            cardsCountByID_Natura[id]--;
+            statistics.Mana_Natura.Add(card);
+            statistics.deck_Natura--;
+        }
+        else
+        {
+            cardsCountByID_Poluare[id]--;
+            statistics.Mana_Poluare.Add(card);
+            statistics.deck_Natura--;
+        }
+            ArrangeCards();
+        photonView.RPC("DrawCardEnemy", PhotonTargets.Others,id);
+    }
+
+    public void ArrangeCards()
+    {
+        Debug.Log("Arranging cards");
+        if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Natura") hand = statistics.Mana_Natura;
+        else hand = statistics.Mana_Poluare;
+        ///ia toate cartile
+        //carti = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        ///daca nu sunt carti, iese din functie
+        //if (carti.Length == 0) return;
+        if (hand.Count <= 0)
+        {
+            Debug.Log("Hand is empty");
+            return;
+        }
+        float currentX;
+        float cardSize = CardTemplate.GetComponent<BoxCollider2D>().size.x;
+        if (hand.Count % 2 == 1) currentX = -(hand.Count - 1) / 2 * cardSize;
+                              else currentX = -(hand.Count / 2 - 1) * cardSize - cardSize / 2;
+        currentX /= 2;
+        for (int i = 0; i < hand.Count; i++)
+        {
+            Hover scriptHover = hand[i].GetComponent<Hover>();
+            PlayingCard card = hand[i].GetComponent<PlayingCard>();
+            Vector3 pozitie = new Vector3(currentX, offsetY);
+            card.SetDestination(pozitie);
+            scriptHover.ResetInitialValues(pozitie);
+            currentX += cardSize/2;
+        }
+    }
+
+    public void ArrangeCardsEnemy()
+    {
+        float offsetY = 2.75f;
+        if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Natura") hand = statistics.Mana_Poluare;
+        else if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Poluare") hand = statistics.Mana_Natura;
+        ///ia toate cartile
+        //carti = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        ///daca nu sunt carti, iese din functie
+        //if (carti.Length == 0) return;
+        if (hand.Count <= 0) return;
+        float currentX;
+        float cardSize = CardTemplate.GetComponent<BoxCollider2D>().size.x;
+        if (hand.Count % 2 == 1) currentX = -(hand.Count - 1) / 2 * cardSize;
+        else currentX = -(hand.Count / 2 - 1) * cardSize - cardSize / 2;
+        currentX /= 2;
+        for (int i = 0; i < hand.Count; i++)
+        {
+            Transform parent = hand[i].transform.parent;
+            Hover scriptHover = hand[i].GetComponent<Hover>();
+            PlayingCard card = hand[i].GetComponent<PlayingCard>();
+
+            Vector3 pozitie = new Vector3(currentX, offsetY);
+            card.SetDestination(pozitie);
+            scriptHover.ResetInitialValues(pozitie);
+            currentX += cardSize / 2;
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetButtonDown("Jump")) DrawCard();
+    }
+
+    [PunRPC]
+    void DrawCardEnemy(int id)
+    {
+        ///TODO: sa schimb template-ul in cartea oponentului
+        GameObject InstantiatedCard = Instantiate(CardTemplate, transform);
+        PlayingCard card = InstantiatedCard.GetComponent<PlayingCard>();
+        //card.ID = id;
+        if ((string)PhotonNetwork.player.CustomProperties["Echipa"] == "Poluare")
+        {
+            cardsCountByID_Natura[id]--;
+            statistics.Mana_Natura.Add(card);
+            statistics.deck_Natura--;
+        }
+        else
+        {
+            cardsCountByID_Poluare[id]--;
+            statistics.Mana_Poluare.Add(card);
+            statistics.deck_Natura--;
+        }
+        ArrangeCardsEnemy();
+    }
+}
